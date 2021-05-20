@@ -31,6 +31,8 @@ public class RequestVolunteer implements Serializable {
 	private byte isrejected;
 
 	private String rejectreason;
+	
+	private long volunteerid;
 
 	//bi-directional many-to-one association to HelpRequest
 	@ManyToOne(fetch=FetchType.LAZY)
@@ -96,4 +98,13 @@ public class RequestVolunteer implements Serializable {
 	public void setHelprequest(HelpRequest helprequest) {
 		this.helprequest = helprequest;
 	}
+
+	public long getVolunteerid() {
+		return volunteerid;
+	}
+
+	public void setVolunteerid(long volunteerid) {
+		this.volunteerid = volunteerid;
+	}	
+	
 }

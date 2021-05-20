@@ -27,6 +27,11 @@ public class RequestNeed implements Serializable {
 
 	public RequestNeed() {
 	}
+	
+	public RequestNeed(int needId, HelpRequest helpRequest) {
+		this.needid = needId;
+		this.helprequest = helpRequest;
+	}
 
 	public long getRequestneedid() {
 		return this.requestneedid;

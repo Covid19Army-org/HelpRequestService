@@ -34,11 +34,11 @@ public class HelpRequest implements Serializable {
 
 	private String district;
 
-	private byte iscontactverified;
+	private boolean iscontactverified;
 
-	private byte iscovidpositive;
+	private boolean iscovidpositive;
 
-	private byte isdeleted;
+	private boolean isdeleted;
 
 	private String pincode;
 
@@ -121,27 +121,27 @@ public class HelpRequest implements Serializable {
 		this.district = district;
 	}
 
-	public byte getIscontactverified() {
+	public boolean getIscontactverified() {
 		return this.iscontactverified;
 	}
 
-	public void setIscontactverified(byte iscontactverified) {
+	public void setIscontactverified(boolean iscontactverified) {
 		this.iscontactverified = iscontactverified;
 	}
 
-	public byte getIscovidpositive() {
+	public boolean getIscovidpositive() {
 		return this.iscovidpositive;
 	}
 
-	public void setIscovidpositive(byte iscovidpositive) {
+	public void setIscovidpositive(boolean iscovidpositive) {
 		this.iscovidpositive = iscovidpositive;
 	}
 
-	public byte getIsdeleted() {
+	public boolean getIsdeleted() {
 		return this.isdeleted;
 	}
 
-	public void setIsdeleted(byte isdeleted) {
+	public void setIsdeleted(boolean isdeleted) {
 		this.isdeleted = isdeleted;
 	}
 
