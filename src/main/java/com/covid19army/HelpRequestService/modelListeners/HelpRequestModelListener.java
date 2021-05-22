@@ -15,5 +15,6 @@ public class HelpRequestModelListener {
 		helpRequest.setDateCreated(currentDate);
 		helpRequest.setIscontactverified(false);
 		helpRequest.setStatus(1);
+		helpRequest.setCountrycode(91);
 	}
 }

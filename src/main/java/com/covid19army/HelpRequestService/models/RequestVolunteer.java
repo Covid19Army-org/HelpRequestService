@@ -2,6 +2,12 @@ package com.covid19army.HelpRequestService.models;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
+
+import com.covid19army.HelpRequestService.modelListeners.RequestVolunteerModelListener;
+
 import java.util.Date;
 
 
@@ -9,8 +15,10 @@ import java.util.Date;
  * The persistent class for the requestvolunteer database table.
  * 
  */
+@EntityListeners(RequestVolunteerModelListener.class)
 @Entity
 @NamedQuery(name="RequestVolunteer.findAll", query="SELECT r FROM RequestVolunteer r")
+@Table(name = "requestvolunteer")
 public class RequestVolunteer implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -26,16 +34,16 @@ public class RequestVolunteer implements Serializable {
 	@Column(name="date_message_last_seen_by_volunteer")
 	private Date dateMessageLastSeenByVolunteer;
 
-	private byte isactive;
+	private boolean isactive;
 
-	private byte isrejected;
+	private boolean isrejected;
 
 	private String rejectreason;
 	
-	private long volunteerid;
+	private Long volunteerid;
 
-	//bi-directional many-to-one association to HelpRequest
-	@ManyToOne(fetch=FetchType.LAZY)
+	//bi-directional many-to-one association to HelpRequest	
+	@ManyToOne(fetch=FetchType.LAZY, optional = false)	
 	@JoinColumn(name="requestid")
 	private HelpRequest helprequest;
 
@@ -67,19 +75,19 @@ public class RequestVolunteer implements Serializable {
 		this.dateMessageLastSeenByVolunteer = dateMessageLastSeenByVolunteer;
 	}
 
-	public byte getIsactive() {
+	public boolean getIsactive() {
 		return this.isactive;
 	}
 
-	public void setIsactive(byte isactive) {
+	public void setIsactive(boolean isactive) {
 		this.isactive = isactive;
 	}
 
-	public byte getIsrejected() {
+	public boolean getIsrejected() {
 		return this.isrejected;
 	}
 
-	public void setIsrejected(byte isrejected) {
+	public void setIsrejected(boolean isrejected) {
 		this.isrejected = isrejected;
 	}
 
@@ -99,11 +107,11 @@ public class RequestVolunteer implements Serializable {
 		this.helprequest = helprequest;
 	}
 
-	public long getVolunteerid() {
+	public Long getVolunteerid() {
 		return volunteerid;
 	}
 
-	public void setVolunteerid(long volunteerid) {
+	public void setVolunteerid(Long volunteerid) {
 		this.volunteerid = volunteerid;
 	}	
 	

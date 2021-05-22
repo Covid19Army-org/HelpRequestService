@@ -11,12 +11,10 @@ public class HelpRequestDto {
 	private String comments;
 
 	private String contactnumber;
-
-	private int countrycode;
 	
 	private String district;	
 
-	private byte iscovidpositive;
+	private boolean iscovidpositive;
 
 	private String pincode;
 	
@@ -72,14 +70,6 @@ public class HelpRequestDto {
 		this.contactnumber = contactnumber;
 	}
 
-	public int getCountrycode() {
-		return countrycode;
-	}
-
-	public void setCountrycode(int countrycode) {
-		this.countrycode = countrycode;
-	}
-
 	public String getDistrict() {
 		return district;
 	}
@@ -88,11 +78,11 @@ public class HelpRequestDto {
 		this.district = district;
 	}
 
-	public byte getIscovidpositive() {
+	public boolean getIscovidpositive() {
 		return iscovidpositive;
 	}
 
-	public void setIscovidpositive(byte iscovidpositive) {
+	public void setIscovidpositive(boolean iscovidpositive) {
 		this.iscovidpositive = iscovidpositive;
 	}
 

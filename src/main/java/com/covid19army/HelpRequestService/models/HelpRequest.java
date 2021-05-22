@@ -2,6 +2,12 @@ package com.covid19army.HelpRequestService.models;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
+
+import com.covid19army.HelpRequestService.modelListeners.HelpRequestModelListener;
+
 import java.util.Date;
 import java.util.List;
 
@@ -10,6 +16,7 @@ import java.util.List;
  * The persistent class for the helprequests database table.
  * 
  */
+@EntityListeners(HelpRequestModelListener.class)
 @Entity
 @Table(name="helprequests")
 @NamedQuery(name="HelpRequest.findAll", query="SELECT h FROM HelpRequest h")
@@ -52,14 +59,24 @@ public class HelpRequest implements Serializable {
 	private String state;
 
 	private int status;
+	
+	public long userid;
 
+
+	public long getUserid() {
+		return userid;
+	}
+
+	public void setUserid(long userid) {
+		this.userid = userid;
+	}
 
 	//bi-directional many-to-one association to RequestNeed
-	@OneToMany(mappedBy="helprequest")
+	@OneToMany(mappedBy="helprequest", cascade = CascadeType.ALL, fetch= FetchType.LAZY)	
 	private List<RequestNeed> requestneeds;
 
 	//bi-directional many-to-one association to RequestVolunteer
-	@OneToMany(mappedBy="helprequest")
+	@OneToMany(mappedBy="helprequest", cascade = CascadeType.ALL, fetch = FetchType.LAZY)	
 	private List<RequestVolunteer> requestvolunteers;
 
 	public HelpRequest() {

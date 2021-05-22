@@ -3,6 +3,9 @@ package com.covid19army.HelpRequestService.models;
 import java.io.Serializable;
 import javax.persistence.*;
 
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
+
 
 /**
  * The persistent class for the requestneeds database table.
@@ -20,8 +23,8 @@ public class RequestNeed implements Serializable {
 
 	private int needid;
 
-	//bi-directional many-to-one association to HelpRequest
-	@ManyToOne(fetch=FetchType.LAZY)
+	//bi-directional many-to-one association to HelpRequest	
+	@ManyToOne(fetch=FetchType.LAZY, optional = false)	
 	@JoinColumn(name="requestid")
 	private HelpRequest helprequest;
 
