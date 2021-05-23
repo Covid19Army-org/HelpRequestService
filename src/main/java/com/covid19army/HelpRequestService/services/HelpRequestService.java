@@ -21,9 +21,11 @@ import com.covid19army.HelpRequestService.dtos.PagedResponseDto;
 import com.covid19army.HelpRequestService.dtos.RequestVolunteerDto;
 import com.covid19army.HelpRequestService.dtos.VolunteerResponseDto;
 import com.covid19army.HelpRequestService.models.HelpRequest;
+import com.covid19army.HelpRequestService.models.NewRequestWaitingQueue;
 import com.covid19army.HelpRequestService.models.RequestNeed;
 import com.covid19army.HelpRequestService.models.RequestVolunteer;
 import com.covid19army.HelpRequestService.repositories.HelpRequestRepository;
+import com.covid19army.HelpRequestService.repositories.NewRequestWaitingQueueRepository;
 import com.covid19army.core.extensions.HttpServletRequestExtension;
 
 
@@ -35,6 +37,9 @@ public class HelpRequestService {
 	
 	@Autowired
 	HelpRequestRepository _helpRequestRepository;
+	
+	@Autowired
+	NewRequestWaitingQueueRepository _newRequestWaitingQueueRepository;
 
 	@Autowired
 	ModelMapper _mapper;
@@ -51,13 +56,13 @@ public class HelpRequestService {
 		}
 		
 		
-		List<RequestVolunteer> requestVolunteers = new ArrayList<RequestVolunteer>();
-		RequestVolunteer requestVolunteer = new RequestVolunteer();
-		requestVolunteer.setHelprequest(helpRequest);
-		requestVolunteers.add(requestVolunteer);
+		//List<RequestVolunteer> requestVolunteers = new ArrayList<RequestVolunteer>();
+		//RequestVolunteer requestVolunteer = new RequestVolunteer();
+		//requestVolunteer.setHelprequest(helpRequest);
+		//requestVolunteers.add(requestVolunteer);
 		
 		helpRequest.setRequestneeds(requestNeeds);
-		helpRequest.setRequestvolunteers(requestVolunteers);
+		//helpRequest.setRequestvolunteers(requestVolunteers);
 		
 		_helpRequestRepository.save(helpRequest);
 		return helpRequest;
@@ -67,9 +72,7 @@ public class HelpRequestService {
 		long userid = Long.parseLong( _requestExtension.getAuthenticatedUser());
 		Page<HelpRequest> page = _helpRequestRepository.findByUserid(userid, pageable);
 		
-		List<HelpRequestResponseDto> dto = page.getContent().stream()
-		.map(hr -> _mapper.map(hr, HelpRequestResponseDto.class))
-		.collect(Collectors.toList());
+		List<HelpRequestResponseDto> dto = this.convertToHelpRequestResponseDto(page.getContent());
 		
 		List<Long> volunteersIdList = dto.stream()
 				.flatMap(d -> d.getRequestvolunteers()
@@ -101,6 +104,35 @@ public class HelpRequestService {
 		
 	}
 	
+	// get new requests for volunteer
+	public List<HelpRequestResponseDto> getNewRequestsForVolunteer(long volunteerid, Pageable pageable){
+		//TODO: validate volunteer
+		Page<NewRequestWaitingQueue> requestWaitingQueuePagedResult = _newRequestWaitingQueueRepository.findByVolunteerid(volunteerid, pageable);
+		List<Long> requestIds = requestWaitingQueuePagedResult.getContent()
+		.stream().map(NewRequestWaitingQueue::getRequestid)
+		.collect(Collectors.toList());
+		List<HelpRequest> volunteerRequests = _helpRequestRepository.findByRequestidIn(requestIds);
+		List<HelpRequestResponseDto> dto = this.convertToHelpRequestResponseDto(volunteerRequests);
+				
+		return dto;
+	}
+	
+	// get accepted requests for volunteer
+	public PagedResponseDto<HelpRequestResponseDto> getVolunteerAcceptedRequests(long volunteerid, Pageable pageable){
+		//TODO:  validate volunteer
+		Page<HelpRequest> helpRequestPage = _helpRequestRepository.findVolunteerAcceptedRequest(volunteerid, pageable);
+		List<HelpRequestResponseDto> dto = convertToHelpRequestResponseDto(helpRequestPage.getContent());
+		PagedResponseDto<HelpRequestResponseDto> responseData = new PagedResponseDto<>();
+		responseData.setCurrentPage(helpRequestPage.getNumber());
+		responseData.setTotalItems(helpRequestPage.getTotalElements());
+		responseData.setTotalPages(helpRequestPage.getTotalPages());
+		responseData.setData(dto);
+		
+		return responseData; 		
+	}
+	
+	// get rejected requests for volunteer ?
+	
 	private HelpRequestResponseDto updateHelpRequestResponseDto(HelpRequestResponseDto dto, List<VolunteerResponseDto> volunteerResponseResult) {
 		/*
 		for(RequestVolunteerDto volunteerDto : dto.getRequestvolunteers()) {			
@@ -128,4 +160,11 @@ public class HelpRequestService {
 		return volunteerDto;
 	}
 	
+	
+	private List<HelpRequestResponseDto> convertToHelpRequestResponseDto(List<HelpRequest> requestModelData){
+		List<HelpRequestResponseDto> dto = requestModelData.stream()
+		.map(hr -> _mapper.map(hr, HelpRequestResponseDto.class))
+		.collect(Collectors.toList());
+		return dto;
+	}
 }

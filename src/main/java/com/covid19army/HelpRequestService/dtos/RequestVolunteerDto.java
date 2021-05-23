@@ -1,7 +1,7 @@
 package com.covid19army.HelpRequestService.dtos;
 
 public class RequestVolunteerDto implements Cloneable{
-	Long volunteerid = 1L;
+	long volunteerid;
 	boolean isactive;
 	boolean isreject;
 	String rejectreason;
@@ -14,11 +14,11 @@ public class RequestVolunteerDto implements Cloneable{
 	public void setVolunteerName(String volunteerName) {
 		this.volunteerName = volunteerName;
 	}
-	public Long getVolunteerid() {
+	public long getVolunteerid() {
 		return volunteerid;
 	}
-	public void setVolunteerid(Long volunteerid) {
-		this.volunteerid = 1L;
+	public void setVolunteerid(long volunteerid) {
+		this.volunteerid = volunteerid;
 	}
 	public boolean isIsactive() {
 		return isactive;

@@ -15,6 +15,6 @@ public class RequestVolunteerModelListener {
 		requestVolunteer.setDateMessageLastSeenByVolunteer(currentDate);
 		requestVolunteer.setIsactive(true);
 		requestVolunteer.setIsrejected(false);	
-		requestVolunteer.setVolunteerid(null);
+		//requestVolunteer.setVolunteerid(null);
 	}
 }

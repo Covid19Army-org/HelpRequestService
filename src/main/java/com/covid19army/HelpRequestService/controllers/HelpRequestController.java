@@ -1,5 +1,7 @@
 package com.covid19army.HelpRequestService.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -52,5 +54,27 @@ public class HelpRequestController {
 			@RequestParam(defaultValue = "10") int size){
 		Pageable pageable = PageRequest.of(page, size,Sort.by(Sort.Direction.DESC, "dateCreated"));
 		return _helpRequestService.getHelpRequestsByUser(pageable);
+	}
+	
+	@GetMapping("/volunteer/newRequests/{volunteerId}")
+	public List<HelpRequestResponseDto> getNewVolunteerRequests(@PathVariable long volunteerId, @RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size){
+		Pageable pageable = PageRequest.of(page, size,Sort.by(Sort.Direction.DESC, "dateCreated"));
+		return _helpRequestService.getNewRequestsForVolunteer(volunteerId, pageable);
+	}
+	
+	@GetMapping("/volunteer/acceptedRequests/{volunteerId}")
+	public PagedResponseDto<HelpRequestResponseDto> getVolunteerAcceptedRequests(@PathVariable long volunteerId, @RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size){
+		Pageable pageable = PageRequest.of(page, size,Sort.by(Sort.Direction.DESC, "dateCreated"));
+		return _helpRequestService.getVolunteerAcceptedRequests(volunteerId, pageable);
+	}
+	
+	public void acceptRequest() {
+		
+	}
+	
+	public void rejectRequest() {
+		
 	}
 }
