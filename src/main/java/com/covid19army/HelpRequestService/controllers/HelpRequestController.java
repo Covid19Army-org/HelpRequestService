@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.covid19army.HelpRequestService.dtos.HelpRequestDto;
 import com.covid19army.HelpRequestService.dtos.HelpRequestResponseDto;
 import com.covid19army.HelpRequestService.dtos.PagedResponseDto;
+import com.covid19army.HelpRequestService.dtos.RequestVolunteerDto;
 import com.covid19army.HelpRequestService.models.HelpRequest;
 import com.covid19army.HelpRequestService.services.HelpRequestService;
 import com.covid19army.core.extensions.HttpServletRequestExtension;
@@ -68,13 +69,5 @@ public class HelpRequestController {
 			@RequestParam(defaultValue = "10") int size){
 		Pageable pageable = PageRequest.of(page, size,Sort.by(Sort.Direction.DESC, "dateCreated"));
 		return _helpRequestService.getVolunteerAcceptedRequests(volunteerId, pageable);
-	}
-	
-	public void acceptRequest() {
-		
-	}
-	
-	public void rejectRequest() {
-		
 	}
 }
