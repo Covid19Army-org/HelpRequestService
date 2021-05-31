@@ -2,6 +2,8 @@ package com.covid19army.HelpRequestService.dtos;
 
 import java.util.List;
 
+import com.covid19army.core.enums.NeedsEnum;
+
 public class HelpRequestDto {
 	
 	private long requestid;
@@ -28,13 +30,13 @@ public class HelpRequestDto {
 
 	private int status;
 	
-	List<Integer> needs;
+	List<NeedsEnum> needs;
 	
-	public List<Integer> getNeeds(){
+	public List<NeedsEnum> getNeeds(){
 		return needs;
 	}
 	
-	public void setNeeds(List<Integer> needs) {
+	public void setNeeds(List<NeedsEnum> needs) {
 		this.needs = needs;
 	}
 	

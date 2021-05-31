@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,7 +27,10 @@ import com.covid19army.HelpRequestService.models.RequestNeed;
 import com.covid19army.HelpRequestService.models.RequestVolunteer;
 import com.covid19army.HelpRequestService.repositories.HelpRequestRepository;
 import com.covid19army.HelpRequestService.repositories.NewRequestWaitingQueueRepository;
+import com.covid19army.core.dtos.MobileVerificationQueueDto;
+import com.covid19army.core.enums.NeedsEnum;
 import com.covid19army.core.extensions.HttpServletRequestExtension;
+import com.covid19army.core.mex.rabbitmq.RabbitMQSender;
 
 
 
@@ -44,6 +48,12 @@ public class HelpRequestService {
 	@Autowired
 	ModelMapper _mapper;
 	
+	@Qualifier("otpExchangeSender")
+	RabbitMQSender _otpExchangeSender;
+	
+	@Qualifier("newRequestWaitingExchangeSender")
+	RabbitMQSender _newRequestWaitingExchangeSender;
+	
 	@Autowired
 	HttpServletRequestExtension _requestExtension;
 	
@@ -51,7 +61,7 @@ public class HelpRequestService {
 		HelpRequest helpRequest = _mapper.map(helpRequestDto, HelpRequest.class);
 		helpRequest.setUserid(Long.parseLong( _requestExtension.getAuthenticatedUser()));
 		List<RequestNeed> requestNeeds = new ArrayList<>();
-		for(int needType : helpRequestDto.getNeeds()){
+		for(NeedsEnum needType : helpRequestDto.getNeeds()){
 			requestNeeds.add(new RequestNeed(needType,helpRequest));			
 		}
 		
@@ -65,6 +75,15 @@ public class HelpRequestService {
 		//helpRequest.setRequestvolunteers(requestVolunteers);
 		
 		_helpRequestRepository.save(helpRequest);
+		
+		MobileVerificationQueueDto otpdto = new MobileVerificationQueueDto();
+		otpdto.setMobilenumber(helpRequest.getContactnumber());
+		otpdto.setEntityid(helpRequest.getRequestid());
+		otpdto.setEntitytype("HRQ");
+		_otpExchangeSender.<MobileVerificationQueueDto>send(otpdto);
+		
+		_newRequestWaitingExchangeSender.<HelpRequest>send(helpRequest);		
+		
 		return helpRequest;
 	}
 	

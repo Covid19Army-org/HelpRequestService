@@ -1,16 +1,18 @@
 package com.covid19army.HelpRequestService.dtos;
 
+import com.covid19army.core.enums.NeedsEnum;
+
 public class RequestNeedDto {
-	private int needid;
+	private NeedsEnum needid;
 
 	public RequestNeedDto() {
 	}
 
-	public int getNeedid() {
+	public NeedsEnum getNeedid() {
 		return needid;
 	}
 
-	public void setNeedid(int needid) {
+	public void setNeedid(NeedsEnum needid) {
 		this.needid = needid;
 	}
 }

@@ -6,6 +6,8 @@ import javax.persistence.*;
 import org.hibernate.annotations.LazyToOne;
 import org.hibernate.annotations.LazyToOneOption;
 
+import com.covid19army.core.enums.NeedsEnum;
+
 
 /**
  * The persistent class for the requestneeds database table.
@@ -21,7 +23,8 @@ public class RequestNeed implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long requestneedid;
 
-	private int needid;
+	@Enumerated(EnumType.ORDINAL)
+	private NeedsEnum needid;
 
 	//bi-directional many-to-one association to HelpRequest	
 	@ManyToOne(fetch=FetchType.LAZY, optional = false)	
@@ -31,7 +34,7 @@ public class RequestNeed implements Serializable {
 	public RequestNeed() {
 	}
 	
-	public RequestNeed(int needId, HelpRequest helpRequest) {
+	public RequestNeed(NeedsEnum needId, HelpRequest helpRequest) {
 		this.needid = needId;
 		this.helprequest = helpRequest;
 	}
@@ -44,11 +47,11 @@ public class RequestNeed implements Serializable {
 		this.requestneedid = requestneedid;
 	}
 
-	public int getNeedid() {
+	public NeedsEnum getNeedid() {
 		return this.needid;
 	}
 
-	public void setNeedid(int needid) {
+	public void setNeedid(NeedsEnum needid) {
 		this.needid = needid;
 	}
 
