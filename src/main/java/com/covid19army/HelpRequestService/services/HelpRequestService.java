@@ -3,7 +3,7 @@ package com.covid19army.HelpRequestService.services;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -29,6 +29,7 @@ import com.covid19army.HelpRequestService.repositories.HelpRequestRepository;
 import com.covid19army.HelpRequestService.repositories.NewRequestWaitingQueueRepository;
 import com.covid19army.core.dtos.MobileVerificationQueueDto;
 import com.covid19army.core.enums.NeedsEnum;
+import com.covid19army.core.exceptions.ResourceNotFoundException;
 import com.covid19army.core.extensions.HttpServletRequestExtension;
 import com.covid19army.core.mex.rabbitmq.RabbitMQSender;
 
@@ -85,6 +86,17 @@ public class HelpRequestService {
 		_newRequestWaitingExchangeSender.<HelpRequest>send(helpRequest);		
 		
 		return helpRequest;
+	}
+	
+	public void updateMobileVerified(long requestId, boolean isVerified) throws ResourceNotFoundException {
+		Optional<HelpRequest> helpRequest =  _helpRequestRepository.findById(requestId);
+		if(helpRequest.isPresent()) {
+			var model = helpRequest.get();
+			model.setIscontactverified(isVerified);
+			_helpRequestRepository.save(model);
+			
+		}
+		throw new ResourceNotFoundException("Invalid Help Request Id");
 	}
 	
 	public PagedResponseDto<HelpRequestResponseDto> getHelpRequestsByUser(Pageable pageable){

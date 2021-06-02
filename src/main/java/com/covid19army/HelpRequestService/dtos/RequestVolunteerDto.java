@@ -1,6 +1,7 @@
 package com.covid19army.HelpRequestService.dtos;
 
 public class RequestVolunteerDto implements Cloneable{
+	long requestid;
 	long volunteerid;
 	boolean isactive;
 	boolean isreject;
@@ -8,6 +9,12 @@ public class RequestVolunteerDto implements Cloneable{
 	String volunteerName;
 	
 	
+	public long getRequestid() {
+		return requestid;
+	}
+	public void setRequestid(long requestid) {
+		this.requestid = requestid;
+	}
 	public String getVolunteerName() {
 		return volunteerName;
 	}

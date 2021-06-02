@@ -2,6 +2,8 @@ package com.covid19army.HelpRequestService.controllers;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,9 @@ import com.covid19army.HelpRequestService.dtos.PagedResponseDto;
 import com.covid19army.HelpRequestService.dtos.RequestVolunteerDto;
 import com.covid19army.HelpRequestService.models.HelpRequest;
 import com.covid19army.HelpRequestService.services.HelpRequestService;
+import com.covid19army.core.common.clients.OtpServiceClient;
+import com.covid19army.core.dtos.OtpVerificationRequestDto;
+import com.covid19army.core.exceptions.ResourceNotFoundException;
 import com.covid19army.core.extensions.HttpServletRequestExtension;
 
 @RestController
@@ -32,6 +37,9 @@ public class HelpRequestController {
 	
 	@Autowired
 	HelpRequestService _helpRequestService;
+	
+	@Autowired
+	OtpServiceClient _otpServiceClient;
 	
 	@GetMapping("/health")
 	public String health() {
@@ -69,5 +77,18 @@ public class HelpRequestController {
 			@RequestParam(defaultValue = "10") int size){
 		Pageable pageable = PageRequest.of(page, size,Sort.by(Sort.Direction.DESC, "dateCreated"));
 		return _helpRequestService.getVolunteerAcceptedRequests(volunteerId, pageable);
+	}
+	
+	@PostMapping("/validateotp")
+	public boolean validateOtp(@RequestBody OtpVerificationRequestDto otpRequestDto) 
+			throws ResourceNotFoundException{
+		
+		var result = _otpServiceClient.validateOtp(otpRequestDto);
+		if(result) {
+			_helpRequestService.updateMobileVerified(otpRequestDto.getEntityid(), true);
+		}
+		
+		throw new ResourceNotFoundException("Invaid Otp.");
+		
 	}
 }

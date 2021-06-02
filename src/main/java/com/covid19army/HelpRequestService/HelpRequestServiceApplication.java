@@ -41,7 +41,15 @@ public class HelpRequestServiceApplication {
 	@Bean
 	public RabbitMQSender newRequestWaitingExchangeSender(
 			@Value("${covid19army.rabbitmq.newRequestWaitingExchange}") final String newRequestWaitingExchange,
-			@Value("${covid19army.rabbitmq.newRequestWaitingExchange.routingkey:}") final String routingkey) {
+			@Value("${covid19army.rabbitmq.newRequestWaitingExchange.newrequestroutingkey:newrequest}") final String routingkey) {
+		return new RabbitMQSender(newRequestWaitingExchange, routingkey);
+		
+	}
+	
+	@Bean
+	public RabbitMQSender newRequestAcceptRejectExchangeSender(
+			@Value("${covid19army.rabbitmq.newRequestWaitingExchange}") final String newRequestWaitingExchange,
+			@Value("${covid19army.rabbitmq.newRequestWaitingExchange.acceptrejectroutingkey:acceptreject}") final String routingkey) {
 		return new RabbitMQSender(newRequestWaitingExchange, routingkey);
 		
 	}
