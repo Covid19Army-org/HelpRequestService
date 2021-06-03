@@ -1,6 +1,12 @@
 package com.covid19army.HelpRequestService.dtos;
 
-public class RequestVolunteerDto implements Cloneable{
+import java.io.Serializable;
+
+public class RequestVolunteerDto implements Cloneable, Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4918770331781743158L;
 	long requestid;
 	long volunteerid;
 	boolean isactive;

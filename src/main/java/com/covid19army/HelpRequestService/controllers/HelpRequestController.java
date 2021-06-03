@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import com.covid19army.HelpRequestService.dtos.HelpRequestDto;
 import com.covid19army.HelpRequestService.dtos.HelpRequestResponseDto;
 import com.covid19army.HelpRequestService.dtos.PagedResponseDto;
@@ -25,6 +26,7 @@ import com.covid19army.HelpRequestService.models.HelpRequest;
 import com.covid19army.HelpRequestService.services.HelpRequestService;
 import com.covid19army.core.common.clients.OtpServiceClient;
 import com.covid19army.core.dtos.OtpVerificationRequestDto;
+import com.covid19army.core.exceptions.NotAuthorizedException;
 import com.covid19army.core.exceptions.ResourceNotFoundException;
 import com.covid19army.core.extensions.HttpServletRequestExtension;
 
@@ -53,9 +55,14 @@ public class HelpRequestController {
 	}
 	
 	@PutMapping("/{helpRequestId}")
-	public long updateHelpRequest(@RequestBody HelpRequestDto helpRequestDto, @PathVariable long helpRequestId) {
-		HelpRequest helpRequest = _helpRequestService.createHelpRequest(helpRequestDto);
-		return helpRequest.getRequestid();
+	public void updateHelpRequest(@RequestBody HelpRequestDto helpRequestDto, @PathVariable long helpRequestId) {
+		 _helpRequestService.updateHelpRequest(helpRequestDto);
+		//return helpRequest.getRequestid();
+	}
+	
+	@GetMapping("/owner/{requestid}")
+	public long getRequestOwner(@PathVariable long requestid) throws ResourceNotFoundException, NotAuthorizedException {
+		return _helpRequestService.getHelpRequestOwner(requestid);
 	}
 	
 	@GetMapping("/myRequests")

@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.covid19army.HelpRequestService.clients.VolunteerServiceClient;
 import com.covid19army.HelpRequestService.dtos.HelpRequestDto;
 import com.covid19army.HelpRequestService.dtos.HelpRequestResponseDto;
 import com.covid19army.HelpRequestService.dtos.PagedResponseDto;
@@ -29,6 +30,7 @@ import com.covid19army.HelpRequestService.repositories.HelpRequestRepository;
 import com.covid19army.HelpRequestService.repositories.NewRequestWaitingQueueRepository;
 import com.covid19army.core.dtos.MobileVerificationQueueDto;
 import com.covid19army.core.enums.NeedsEnum;
+import com.covid19army.core.exceptions.NotAuthorizedException;
 import com.covid19army.core.exceptions.ResourceNotFoundException;
 import com.covid19army.core.extensions.HttpServletRequestExtension;
 import com.covid19army.core.mex.rabbitmq.RabbitMQSender;
@@ -49,14 +51,39 @@ public class HelpRequestService {
 	@Autowired
 	ModelMapper _mapper;
 	
+	@Autowired
 	@Qualifier("otpExchangeSender")
 	RabbitMQSender _otpExchangeSender;
 	
+	@Autowired
 	@Qualifier("newRequestWaitingExchangeSender")
 	RabbitMQSender _newRequestWaitingExchangeSender;
 	
 	@Autowired
 	HttpServletRequestExtension _requestExtension;
+	
+	@Autowired
+	VolunteerServiceClient _volunteerServiceClient;
+	
+	public long getHelpRequestOwner(long requestId) throws ResourceNotFoundException, NotAuthorizedException {
+		long authUserId = Long.parseLong( _requestExtension.getAuthenticatedUser());
+		var helprequest = _helpRequestRepository.findById(requestId);
+		
+		if(helprequest.isEmpty())
+			throw new ResourceNotFoundException("Request not found");
+		
+		var helprequestmodel = helprequest.get();
+		var owner = helprequestmodel.getUserid();
+		if(owner != authUserId)
+			throw new NotAuthorizedException();
+		
+		return owner;
+		
+	}
+	
+	public void updateHelpRequest(HelpRequestDto helpRequestDto) {
+		
+	}
 	
 	public HelpRequest createHelpRequest(HelpRequestDto helpRequestDto) {
 		HelpRequest helpRequest = _mapper.map(helpRequestDto, HelpRequest.class);
@@ -83,7 +110,9 @@ public class HelpRequestService {
 		otpdto.setEntitytype("HRQ");
 		_otpExchangeSender.<MobileVerificationQueueDto>send(otpdto);
 		
-		_newRequestWaitingExchangeSender.<HelpRequest>send(helpRequest);		
+		var requestMessage = _mapper.map(helpRequest, HelpRequestResponseDto.class);
+		
+		_newRequestWaitingExchangeSender.<HelpRequestResponseDto>send(requestMessage);		
 		
 		return helpRequest;
 	}
@@ -115,10 +144,9 @@ public class HelpRequestService {
 		
 		//TODO: make client call to get volunteer data
 		
-		List<VolunteerResponseDto> volunteerResponseResult = 
-				new ArrayList<VolunteerResponseDto>();
+		List<VolunteerResponseDto> volunteerResponseResult = _volunteerServiceClient.searchByVolunteerId(volunteersIdList);
 		
-		volunteerResponseResult.add(new VolunteerResponseDto(1,"Ravi"));
+		//volunteerResponseResult.add(new VolunteerResponseDto(1,"Ravi"));
 			
 		dto = dto.stream()
 				.map(hr -> this.updateHelpRequestResponseDto(hr, volunteerResponseResult ))

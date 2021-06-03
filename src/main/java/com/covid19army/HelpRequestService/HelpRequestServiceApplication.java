@@ -7,13 +7,19 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 
+import com.covid19army.HelpRequestService.clients.VolunteerServiceClient;
+import com.covid19army.core.common.clients.OtpServiceClient;
 import com.covid19army.core.extensions.HttpServletRequestExtension;
+import com.covid19army.core.mex.rabbitmq.RabbitMQConfig;
 import com.covid19army.core.mex.rabbitmq.RabbitMQSender;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients
+@EnableFeignClients(clients = {OtpServiceClient.class, VolunteerServiceClient.class})
+@Import(RabbitMQConfig.class)
 public class HelpRequestServiceApplication {
 
 	public static void main(String[] args) {

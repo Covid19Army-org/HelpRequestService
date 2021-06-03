@@ -1,11 +1,17 @@
 package com.covid19army.HelpRequestService.dtos;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.covid19army.core.enums.NeedsEnum;
 
-public class HelpRequestDto {
+public class HelpRequestDto implements  Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7788578419319792321L;
+
 	private long requestid;
 
 	private int age;

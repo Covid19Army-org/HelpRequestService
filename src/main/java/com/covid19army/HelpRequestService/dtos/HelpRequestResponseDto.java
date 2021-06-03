@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.netflix.discovery.provider.ISerializer;
+
 public class HelpRequestResponseDto extends HelpRequestDto{
 	List<RequestNeedDto> requestneeds;
 	List<RequestVolunteerDto> requestvolunteers;
