@@ -10,7 +10,7 @@ public class RequestVolunteerDto implements Cloneable, Serializable{
 	long requestid;
 	long volunteerid;
 	boolean isactive;
-	boolean isreject;
+	boolean isrejected;
 	String rejectreason;
 	String volunteerName;
 	
@@ -39,11 +39,11 @@ public class RequestVolunteerDto implements Cloneable, Serializable{
 	public void setIsactive(boolean isactive) {
 		this.isactive = isactive;
 	}
-	public boolean isIsreject() {
-		return isreject;
+	public boolean isIsrejected() {
+		return isrejected;
 	}
-	public void setIsreject(boolean isreject) {
-		this.isreject = isreject;
+	public void setIsrejected(boolean isrejected) {
+		this.isrejected = isrejected;
 	}
 	public String getRejectreason() {
 		return rejectreason;
