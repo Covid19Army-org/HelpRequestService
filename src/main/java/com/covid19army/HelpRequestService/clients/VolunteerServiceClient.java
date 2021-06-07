@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.covid19army.HelpRequestService.dtos.VolunteerResponseDto;
 
 
-@FeignClient(name="VolunteerService", url = "${app.client.tokenservice.url:}")
+@FeignClient(name="VolunteerService", url = "${app.client.volunteerservice.url:}")
 public interface VolunteerServiceClient {
 
 	@PostMapping("/volunteer/searchbyids")
