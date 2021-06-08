@@ -70,7 +70,7 @@
 	        <artifactId>Covid19Army-Core</artifactId>
 	        <version>0.0.1-SNAPSHOT</version>
 	        <scope>system</scope>
-	        <systemPath>C:\lib\covid19army-core-1.0.0.jar</systemPath>
+	        <systemPath>${project.basedir}\lib\covid19army-core-1.0.0.jar</systemPath>
     </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
