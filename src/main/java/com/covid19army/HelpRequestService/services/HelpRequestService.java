@@ -119,13 +119,26 @@ public class HelpRequestService {
 	
 	public void updateMobileVerified(long requestId, boolean isVerified) throws ResourceNotFoundException {
 		Optional<HelpRequest> helpRequest =  _helpRequestRepository.findById(requestId);
-		if(helpRequest.isPresent()) {
-			var model = helpRequest.get();
-			model.setIscontactverified(isVerified);
-			_helpRequestRepository.save(model);
+		if(helpRequest.isEmpty()) {
+			throw new ResourceNotFoundException("Invalid Help Request Id");
 			
 		}
-		throw new ResourceNotFoundException("Invalid Help Request Id");
+		
+		var model = helpRequest.get();
+		model.setIscontactverified(isVerified);
+		_helpRequestRepository.save(model);
+		
+	}
+	
+	public void updateRequestStatus(long requestId, int status) throws ResourceNotFoundException {
+		Optional<HelpRequest> helpRequest =  _helpRequestRepository.findById(requestId);
+		if(helpRequest.isEmpty()) {
+			throw new ResourceNotFoundException("Invalid Help Request Id");
+		}
+		var model = helpRequest.get();
+		model.setStatus(status);			
+		_helpRequestRepository.save(model);
+		
 	}
 	
 	public PagedResponseDto<HelpRequestResponseDto> getHelpRequestsByUser(Pageable pageable){

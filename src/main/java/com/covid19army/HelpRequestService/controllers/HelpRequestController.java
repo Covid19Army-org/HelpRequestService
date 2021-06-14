@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +24,7 @@ import com.covid19army.HelpRequestService.dtos.HelpRequestDto;
 import com.covid19army.HelpRequestService.dtos.HelpRequestResponseDto;
 import com.covid19army.HelpRequestService.dtos.PagedResponseDto;
 import com.covid19army.HelpRequestService.dtos.RequestVolunteerDto;
+import com.covid19army.HelpRequestService.dtos.UpdateStatusDto;
 import com.covid19army.HelpRequestService.models.HelpRequest;
 import com.covid19army.HelpRequestService.services.HelpRequestService;
 import com.covid19army.core.common.clients.OtpServiceClient;
@@ -97,5 +100,12 @@ public class HelpRequestController {
 		
 		throw new ResourceNotFoundException("Invaid Otp.");
 		
+	}
+	
+	@PutMapping("/{requestid}/updatestatus")
+	public ResponseEntity<String> updateRequestStatus(@PathVariable long requestid,  @RequestBody UpdateStatusDto updateStatusDto) 
+			throws ResourceNotFoundException{
+		_helpRequestService.updateRequestStatus(requestid, updateStatusDto.getStatus());
+		return new ResponseEntity<>("success", HttpStatus.OK);
 	}
 }
