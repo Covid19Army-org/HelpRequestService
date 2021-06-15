@@ -116,6 +116,29 @@ public class RequestVolunteerService {
 		return rvModel.getRequestvolunteerid();		
 	}
 	
+	public void deactivateRequestVolunteer(long requestid) 
+			throws ResourceNotFoundException, NotAuthorizedException {
+		var authUserId = Long.parseLong(_requestExtension.getAuthenticatedUser());
+		var helpRequest = _helpRequestRepository.findById(requestid);
+		
+		if(helpRequest.isEmpty())
+			throw new ResourceNotFoundException("Request not found.");
+		
+		var hrModel = helpRequest.get();		
+
+		if(hrModel.getUserid() != authUserId)
+			throw new NotAuthorizedException();		
+		
+		var activeRequestOpt = _requestVolunteerRepository.findByIsactiveIsTrueAndRequestid(hrModel.getRequestid());
+		if(activeRequestOpt.isPresent()) {
+			var rvModel = activeRequestOpt.get();	
+
+			rvModel.setIsactive(false);
+			_requestVolunteerRepository.save(rvModel);
+		}
+			
+	}
+	
 	private void publishMessage(RequestVolunteer rvModel, boolean status) {
 		RequestVolutneerStatusDto statusDto = new RequestVolutneerStatusDto();
 		statusDto.setRequestid(rvModel.getHelprequest().getRequestid());

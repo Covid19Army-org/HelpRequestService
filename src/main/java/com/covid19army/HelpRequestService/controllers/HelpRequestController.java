@@ -109,4 +109,11 @@ public class HelpRequestController {
 		_helpRequestService.updateRequestStatus(requestid, updateStatusDto.getStatus());
 		return new ResponseEntity<>("success", HttpStatus.OK);
 	}
+	
+	@GetMapping("/rerequest/{requestid}")
+	public ResponseEntity<String> updateRequestStatus(@PathVariable long requestid) 
+			throws ResourceNotFoundException, NotAuthorizedException{
+		_helpRequestService.reRequest(requestid);
+		return new ResponseEntity<>("success", HttpStatus.OK);
+	}
 }

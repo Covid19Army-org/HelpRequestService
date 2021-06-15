@@ -54,6 +54,9 @@ public class HelpRequestService {
 	RequestVolunteerRepository _rvRepository;
 	
 	@Autowired
+	RequestVolunteerService _rvService;
+	
+	@Autowired
 	ModelMapper _mapper;
 	
 	@Autowired
@@ -148,7 +151,7 @@ public class HelpRequestService {
 		
 	}
 	
-	public void updateRequestStatus(long requestId, HelpRequestStatusEnum status)
+	public HelpRequest updateRequestStatus(long requestId, HelpRequestStatusEnum status)
 			throws ResourceNotFoundException, NotAuthorizedException {
 		var authUserId = Long.parseLong(_requestExtension.getAuthenticatedUser());
 		
@@ -175,8 +178,17 @@ public class HelpRequestService {
 			throw new NotAuthorizedException();
 				
 		hrModel.setStatus(status);			
-		_helpRequestRepository.save(hrModel);
+		return _helpRequestRepository.save(hrModel);
 		
+	}
+	
+	public void reRequest(long requestid) throws ResourceNotFoundException, NotAuthorizedException {
+		var helpRequest = this.updateRequestStatus(requestid, HelpRequestStatusEnum.NEW);
+		_rvService.deactivateRequestVolunteer(requestid);
+		
+		var requestMessage = _mapper.map(helpRequest, HelpRequestResponseDto.class);
+		
+		_newRequestWaitingExchangeSender.<HelpRequestResponseDto>send(requestMessage);		
 	}
 	
 	public PagedResponseDto<HelpRequestResponseDto> getHelpRequestsByUser(Pageable pageable){
