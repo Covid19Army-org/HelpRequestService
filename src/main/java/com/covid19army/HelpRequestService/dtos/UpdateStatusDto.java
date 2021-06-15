@@ -1,16 +1,18 @@
 package com.covid19army.HelpRequestService.dtos;
 
+import com.covid19army.core.enums.HelpRequestStatusEnum;
+
 public class UpdateStatusDto {
 
-	int status;
+	HelpRequestStatusEnum status;
 	
 	long requestid;
 
-	public int getStatus() {
+	public HelpRequestStatusEnum getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(HelpRequestStatusEnum status) {
 		this.status = status;
 	}
 

@@ -58,8 +58,9 @@ public class HelpRequestController {
 	}
 	
 	@PutMapping("/{helpRequestId}")
-	public void updateHelpRequest(@RequestBody HelpRequestDto helpRequestDto, @PathVariable long helpRequestId) {
-		 _helpRequestService.updateHelpRequest(helpRequestDto);
+	public void updateHelpRequest(@RequestBody HelpRequestDto helpRequestDto, @PathVariable long helpRequestId) 
+			throws ResourceNotFoundException {
+		 _helpRequestService.updateHelpRequest(helpRequestId, helpRequestDto);
 		//return helpRequest.getRequestid();
 	}
 	
@@ -104,7 +105,7 @@ public class HelpRequestController {
 	
 	@PutMapping("/{requestid}/updatestatus")
 	public ResponseEntity<String> updateRequestStatus(@PathVariable long requestid,  @RequestBody UpdateStatusDto updateStatusDto) 
-			throws ResourceNotFoundException{
+			throws ResourceNotFoundException, NotAuthorizedException{
 		_helpRequestService.updateRequestStatus(requestid, updateStatusDto.getStatus());
 		return new ResponseEntity<>("success", HttpStatus.OK);
 	}

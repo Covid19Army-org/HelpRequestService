@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.PrePersist;
 
 import com.covid19army.HelpRequestService.models.HelpRequest;
+import com.covid19army.core.enums.HelpRequestStatusEnum;
 
 public class HelpRequestModelListener {
 
@@ -14,7 +15,7 @@ public class HelpRequestModelListener {
 		helpRequest.setIsdeleted(false);
 		helpRequest.setDateCreated(currentDate);
 		helpRequest.setIscontactverified(false);
-		helpRequest.setStatus(1);
+		helpRequest.setStatus(HelpRequestStatusEnum.NEW);
 		helpRequest.setCountrycode(91);
 	}
 }

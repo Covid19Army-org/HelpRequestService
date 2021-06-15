@@ -3,6 +3,7 @@ package com.covid19army.HelpRequestService.dtos;
 import java.io.Serializable;
 import java.util.List;
 
+import com.covid19army.core.enums.HelpRequestStatusEnum;
 import com.covid19army.core.enums.NeedsEnum;
 
 public class HelpRequestDto implements  Serializable{
@@ -34,7 +35,7 @@ public class HelpRequestDto implements  Serializable{
 
 	private String state;
 
-	private int status;
+	private HelpRequestStatusEnum status;
 	
 	List<NeedsEnum> needs;
 	
@@ -134,11 +135,11 @@ public class HelpRequestDto implements  Serializable{
 		this.state = state;
 	}
 
-	public int getStatus() {
+	public HelpRequestStatusEnum getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(HelpRequestStatusEnum status) {
 		this.status = status;
 	}
 	

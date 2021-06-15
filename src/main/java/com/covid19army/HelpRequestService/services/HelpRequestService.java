@@ -28,7 +28,9 @@ import com.covid19army.HelpRequestService.models.RequestNeed;
 import com.covid19army.HelpRequestService.models.RequestVolunteer;
 import com.covid19army.HelpRequestService.repositories.HelpRequestRepository;
 import com.covid19army.HelpRequestService.repositories.NewRequestWaitingQueueRepository;
+import com.covid19army.HelpRequestService.repositories.RequestVolunteerRepository;
 import com.covid19army.core.dtos.MobileVerificationQueueDto;
+import com.covid19army.core.enums.HelpRequestStatusEnum;
 import com.covid19army.core.enums.NeedsEnum;
 import com.covid19army.core.exceptions.NotAuthorizedException;
 import com.covid19army.core.exceptions.ResourceNotFoundException;
@@ -48,6 +50,9 @@ public class HelpRequestService {
 	@Autowired
 	NewRequestWaitingQueueRepository _newRequestWaitingQueueRepository;
 
+	@Autowired
+	RequestVolunteerRepository _rvRepository;
+	
 	@Autowired
 	ModelMapper _mapper;
 	
@@ -81,7 +86,20 @@ public class HelpRequestService {
 		
 	}
 	
-	public void updateHelpRequest(HelpRequestDto helpRequestDto) {
+	public void updateHelpRequest(long requestid, HelpRequestDto helpRequestDto) 
+			throws ResourceNotFoundException {
+		var helprequest = _helpRequestRepository.findById(requestid);
+		
+		if(helprequest.isEmpty())
+			throw new ResourceNotFoundException("Request not found");
+		
+		List<RequestNeed> requestNeeds = new ArrayList<>();
+		HelpRequest helpRequest = _mapper.map(helpRequestDto, HelpRequest.class);
+		for(NeedsEnum needType : helpRequestDto.getNeeds()){
+			requestNeeds.add(new RequestNeed(needType,helpRequest));				
+		}
+		helpRequest.setRequestneeds(requestNeeds);
+		_helpRequestRepository.save(helpRequest);
 		
 	}
 	
@@ -130,14 +148,34 @@ public class HelpRequestService {
 		
 	}
 	
-	public void updateRequestStatus(long requestId, int status) throws ResourceNotFoundException {
+	public void updateRequestStatus(long requestId, HelpRequestStatusEnum status)
+			throws ResourceNotFoundException, NotAuthorizedException {
+		var authUserId = Long.parseLong(_requestExtension.getAuthenticatedUser());
+		
 		Optional<HelpRequest> helpRequest =  _helpRequestRepository.findById(requestId);
 		if(helpRequest.isEmpty()) {
-			throw new ResourceNotFoundException("Invalid Help Request Id");
+			throw new ResourceNotFoundException("Invalid Help Request Id.");			
 		}
-		var model = helpRequest.get();
-		model.setStatus(status);			
-		_helpRequestRepository.save(model);
+		var hrModel = helpRequest.get();
+			
+		Optional<RequestVolunteer> activeRequestVolunteerOpt = _rvRepository.findByIsactiveIsTrueAndRequestid(hrModel.getRequestid());
+		if(activeRequestVolunteerOpt.isEmpty())
+			throw new ResourceNotFoundException("Updating status of inactive request is not allowed");		
+		
+		List<Long> volunteersIdList = new ArrayList<>();
+		volunteersIdList.add(activeRequestVolunteerOpt.get().getVolunteerid());
+		List<VolunteerResponseDto> volunteerList = _volunteerServiceClient.searchByVolunteerId(volunteersIdList);
+		
+		VolunteerResponseDto volunteer = null;
+		if(volunteerList.size() > 0) {
+			volunteer = volunteerList.get(0);			
+		}
+		
+		if(hrModel.getUserid() != authUserId && volunteer.getUserid() != authUserId)
+			throw new NotAuthorizedException();
+				
+		hrModel.setStatus(status);			
+		_helpRequestRepository.save(hrModel);
 		
 	}
 	

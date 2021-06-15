@@ -7,6 +7,7 @@ import org.hibernate.annotations.LazyToOne;
 import org.hibernate.annotations.LazyToOneOption;
 
 import com.covid19army.HelpRequestService.modelListeners.HelpRequestModelListener;
+import com.covid19army.core.enums.HelpRequestStatusEnum;
 
 import java.util.Date;
 import java.util.List;
@@ -58,7 +59,8 @@ public class HelpRequest implements Serializable {
 
 	private String state;
 
-	private int status;
+	@Enumerated(EnumType.ORDINAL)
+	private HelpRequestStatusEnum status;
 	
 	public long userid;
 
@@ -202,11 +204,11 @@ public class HelpRequest implements Serializable {
 		this.state = state;
 	}
 
-	public int getStatus() {
+	public HelpRequestStatusEnum getStatus() {
 		return this.status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(HelpRequestStatusEnum status) {
 		this.status = status;
 	}
 

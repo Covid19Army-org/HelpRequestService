@@ -22,16 +22,14 @@ public class RequestVolunteerController {
 	
 	@PostMapping("/accept")
 	public long acceptRequest(@RequestBody RequestVolunteerDto acceptDto) throws ResourceNotFoundException {
-		acceptDto.setIsactive(true);
-		acceptDto.setIsrejected(false);
-		return _requestVolunteerService.createRequestVolunteer(acceptDto);
+		
+		return _requestVolunteerService.createRequestVolunteerAcceptedObject(acceptDto);
 	}
 	
 	@PostMapping("/reject")
 	public long rejectRequest(@RequestBody RequestVolunteerDto rejectDto) throws ResourceNotFoundException {
-		rejectDto.setIsactive(false);
-		rejectDto.setIsrejected(true);
-		return _requestVolunteerService.createRequestVolunteer(rejectDto);
+		
+		return _requestVolunteerService.createRequestVolunteerRejectedObject(rejectDto);
 	}
 	
 	@GetMapping("/test")
