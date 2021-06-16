@@ -2,6 +2,7 @@ package com.covid19army.HelpRequestService.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,6 +138,10 @@ public class RequestVolunteerService {
 			_requestVolunteerRepository.save(rvModel);
 		}
 			
+	}
+	
+	public Optional<RequestVolunteer> getActiveRequestVolunteer(long requestid){
+		return _requestVolunteerRepository.findByIsactiveIsTrueAndRequestid(requestid);
 	}
 	
 	private void publishMessage(RequestVolunteer rvModel, boolean status) {

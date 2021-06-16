@@ -116,4 +116,10 @@ public class HelpRequestController {
 		_helpRequestService.reRequest(requestid);
 		return new ResponseEntity<>("success", HttpStatus.OK);
 	}
+	
+	@GetMapping("/isvalid/{requestid}")
+	public boolean isValidHelpRequest(@PathVariable long requestid) {
+		var helpRequestOpt = _helpRequestService.getRequest(requestid);
+		return helpRequestOpt.isPresent();
+	}
 }

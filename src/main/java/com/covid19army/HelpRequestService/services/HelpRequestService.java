@@ -74,19 +74,21 @@ public class HelpRequestService {
 	VolunteerServiceClient _volunteerServiceClient;
 	
 	public long getHelpRequestOwner(long requestId) throws ResourceNotFoundException, NotAuthorizedException {
-		long authUserId = Long.parseLong( _requestExtension.getAuthenticatedUser());
+		
 		var helprequest = _helpRequestRepository.findById(requestId);
 		
 		if(helprequest.isEmpty())
 			throw new ResourceNotFoundException("Request not found");
 		
 		var helprequestmodel = helprequest.get();
-		var owner = helprequestmodel.getUserid();
-		if(owner != authUserId)
-			throw new NotAuthorizedException();
+		var owner = helprequestmodel.getUserid();		
 		
 		return owner;
 		
+	}
+	
+	public Optional<HelpRequest> getRequest(long requestId) {
+		return _helpRequestRepository.findById(requestId);
 	}
 	
 	public void updateHelpRequest(long requestid, HelpRequestDto helpRequestDto) 
