@@ -48,7 +48,7 @@ public class HelpRequestController {
 	
 	@GetMapping("/health")
 	public String health() {
-		return String.format("am running %s", _requestExtension.getAuthenticatedUser());
+		return "am running!";
 	}
 	
 	@PostMapping
