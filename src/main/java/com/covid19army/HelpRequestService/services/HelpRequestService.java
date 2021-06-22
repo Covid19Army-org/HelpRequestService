@@ -29,6 +29,9 @@ import com.covid19army.HelpRequestService.models.RequestVolunteer;
 import com.covid19army.HelpRequestService.repositories.HelpRequestRepository;
 import com.covid19army.HelpRequestService.repositories.NewRequestWaitingQueueRepository;
 import com.covid19army.HelpRequestService.repositories.RequestVolunteerRepository;
+import com.covid19army.core.constants.ActivityTypeConstant;
+import com.covid19army.core.constants.EntityTypeConstant;
+import com.covid19army.core.dtos.ActivityLogDto;
 import com.covid19army.core.dtos.MobileVerificationQueueDto;
 import com.covid19army.core.enums.HelpRequestStatusEnum;
 import com.covid19army.core.enums.NeedsEnum;
@@ -36,11 +39,12 @@ import com.covid19army.core.exceptions.NotAuthorizedException;
 import com.covid19army.core.exceptions.ResourceNotFoundException;
 import com.covid19army.core.extensions.HttpServletRequestExtension;
 import com.covid19army.core.mex.rabbitmq.RabbitMQSender;
+import com.covid19army.core.utilities.Helper;
 
 
 
 @Service
-public class HelpRequestService {
+public class HelpRequestService extends BaseService {
 	
 	Logger _logger = LoggerFactory.getLogger(HelpRequestService.class);
 	
@@ -57,18 +61,12 @@ public class HelpRequestService {
 	RequestVolunteerService _rvService;
 	
 	@Autowired
-	ModelMapper _mapper;
-	
-	@Autowired
 	@Qualifier("otpExchangeSender")
 	RabbitMQSender _otpExchangeSender;
 	
 	@Autowired
 	@Qualifier("newRequestWaitingExchangeSender")
 	RabbitMQSender _newRequestWaitingExchangeSender;
-	
-	@Autowired
-	HttpServletRequestExtension _requestExtension;
 	
 	@Autowired
 	VolunteerServiceClient _volunteerServiceClient;
@@ -135,7 +133,7 @@ public class HelpRequestService {
 		
 		var requestMessage = _mapper.map(helpRequest, HelpRequestResponseDto.class);
 		
-		_newRequestWaitingExchangeSender.<HelpRequestResponseDto>send(requestMessage);		
+		_newRequestWaitingExchangeSender.<HelpRequestResponseDto>send(requestMessage);			
 		
 		return helpRequest;
 	}
@@ -176,12 +174,22 @@ public class HelpRequestService {
 			volunteer = volunteerList.get(0);			
 		}
 		
-		if(hrModel.getUserid() != authUserId && volunteer.getUserid() != authUserId)
+		if(hrModel.getUserid() != authUserId && (volunteer != null && volunteer.getUserid() != authUserId))
 			throw new NotAuthorizedException();
 				
 		hrModel.setStatus(status);			
-		return _helpRequestRepository.save(hrModel);
+		hrModel = _helpRequestRepository.save(hrModel);
 		
+		if(volunteer != null) {
+			long fromuserid = authUserId;
+			long touserid = authUserId == volunteer.getUserid() ? hrModel.getUserid() : volunteer.getUserid();
+			this.publishActivity(requestId, EntityTypeConstant.HELP_REQUEST,
+					ActivityTypeConstant.STATUS_CHANGED, fromuserid, touserid);
+			
+		}
+		
+		
+		return hrModel;
 	}
 	
 	public void reRequest(long requestid) throws ResourceNotFoundException, NotAuthorizedException {

@@ -15,24 +15,25 @@ import com.covid19army.HelpRequestService.dtos.VolunteerResponseDto;
 import com.covid19army.HelpRequestService.models.RequestVolunteer;
 import com.covid19army.HelpRequestService.repositories.HelpRequestRepository;
 import com.covid19army.HelpRequestService.repositories.RequestVolunteerRepository;
+import com.covid19army.core.constants.ActivityTypeConstant;
+import com.covid19army.core.constants.EntityTypeConstant;
+import com.covid19army.core.dtos.ActivityLogDto;
 import com.covid19army.core.dtos.RequestVolutneerStatusDto;
 import com.covid19army.core.enums.HelpRequestStatusEnum;
 import com.covid19army.core.exceptions.NotAuthorizedException;
 import com.covid19army.core.exceptions.ResourceNotFoundException;
 import com.covid19army.core.extensions.HttpServletRequestExtension;
 import com.covid19army.core.mex.rabbitmq.RabbitMQSender;
+import com.covid19army.core.utilities.Helper;
 
 @Service
-public class RequestVolunteerService {
+public class RequestVolunteerService extends BaseService {
 
 	@Autowired
 	RequestVolunteerRepository _requestVolunteerRepository;
 	
 	@Autowired
 	HelpRequestRepository _helpRequestRepository;
-	
-	@Autowired
-	HttpServletRequestExtension _requestExtension;
 	
 	@Autowired
 	VolunteerServiceClient _volunteerServiceClient;
@@ -42,8 +43,7 @@ public class RequestVolunteerService {
 	@Qualifier("newRequestAcceptRejectExchangeSender")
 	RabbitMQSender _newRequestAcceptRejectSender;
 	
-	@Autowired
-	ModelMapper _mapper;
+
 	
 	
 	public long createRequestVolunteerAcceptedObject(RequestVolunteerDto dto) 
@@ -83,6 +83,8 @@ public class RequestVolunteerService {
 		_helpRequestRepository.save(hrModel);
 		
 		this.publishMessage(rvModel, true);
+		this.publishActivity(rvModel.getHelprequest().getRequestid(), EntityTypeConstant.HELP_REQUEST, 
+				ActivityTypeConstant.ACCEPT_REQUEST, authUserId, hrModel.getUserid());
 		return rvModel.getRequestvolunteerid();		
 	}
 	
